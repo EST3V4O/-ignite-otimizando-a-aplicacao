@@ -1,3 +1,5 @@
+import { List, ListRowRenderer, AutoSizer } from "react-virtualized"
+
 import { MovieCard } from "./MovieCard";
 
 interface ContentProps {
@@ -20,6 +22,20 @@ interface ContentProps {
 }
 
 export function Content({ selectedGenre, movies }: ContentProps) {
+  const rowRenderer: ListRowRenderer = ({ index, key, style }) => {
+    return (
+      <div key={key} style={style}>
+        <MovieCard
+          key={movies[index].imdbID}
+          title={movies[index].Title}
+          poster={movies[index].Poster}
+          runtime={movies[index].Runtime}
+          rating={movies[index].Ratings[0].Value}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="container">
       <header>
@@ -27,11 +43,18 @@ export function Content({ selectedGenre, movies }: ContentProps) {
       </header>
 
       <main>
-        <div className="movies-list">
-          {movies.map(movie => (
-            <MovieCard key={movie.imdbID} title={movie.Title} poster={movie.Poster} runtime={movie.Runtime} rating={movie.Ratings[0].Value} />
-          ))}
-        </div>
+        <AutoSizer>
+          {({ width }) => (
+            <List
+              height={400}
+              width={width}
+              rowHeight={500}
+              overscanRowCount={1}
+              rowCount={movies.length}
+              rowRenderer={rowRenderer}
+            />
+          )}
+        </AutoSizer>
       </main>
     </div>
   )
